@@ -193,7 +193,7 @@ class Stack:
         if self.isEmpty():
             raise ValueError(f"empty {self.__class__.__name__}")
         if self.__head.next is None:
-            del_item = self.__head
+            del_item = self.__head.value
             self.__head = None
             self.__len -= 1
             return del_item
