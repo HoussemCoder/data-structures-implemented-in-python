@@ -12,7 +12,7 @@ we have some technics to reduce it (not possible to eliminate the collision):
     
     1/ Open hashing (closed addressing) ==> using chaining method (used in our case ==> with a linked_list (ao list, or even a hashmap) in the same pos)
     
-                                           |> linear probing (default choice for open hashing |
+                                           |> linear probing (default choice for open hashing)|
     2/ Closed hashing (open addressing) ==>|> quadratic probing                               |> looking for empty pos using 1 of these 3
                                            |> double hashing                                  |
                                            |> ... (there are other methods out there)
@@ -29,10 +29,16 @@ we have some technics to reduce it (not possible to eliminate the collision):
 #### we have implemented all these technics above ####
  """
 
-from datastructures import LinkedList as ll
+from datastructures.linkedList import LinkedList as ll
 
 #### using open hashing (chaining) for avoiding collision ####
 class Hashmap:
+    """ 
+    in this class we deal with collisions using closed addressing method (chaining)
+    for that we called our linked list module, specificly we use the singly liked list.
+    - we don't need for a load factor in this class because we use the open hashing method
+    - len func refer to a variable instead of an enture func to minimize the times of looping through this DS
+     """
     def __init__(self, size=17) -> None:
         self.__SIZE = size
         self.__arr = [None for _ in range(self.__SIZE)]
@@ -41,15 +47,19 @@ class Hashmap:
         self.__len = 0
 
     def __setitem__(self, key, value):
+        """ change a node value based on its index """
         return self.append(key, value)
 
     def __getitem__(self, key):
+        """ get a node value based on its index """
         return self.find(key)
 
     def __delitem__(self, key):
+        """ remove a specific item from this DS """
         return self.remove(key)
 
     def __contains__(self, __o: object):
+        """ return True if __o exist in this DS otherwise False """
         return True if self.find(__o) is not None or __o is self else False
 
     def __iter__(self):
@@ -61,6 +71,13 @@ class Hashmap:
             self.index += 1
             return self.__keys[self.index-1]
         raise StopIteration
+
+    def __add__(self, __o: object):
+        """ concatenate 2 data structures if they are from the same class """
+        if isinstance(__o, Hashmap):
+            for i in range(len(__o)):
+                self.append(__o[i])
+        raise TypeError("(+) operator could not wokrs between different classes types")
 
     def __eq__(self, __o: object) -> bool:
         if isinstance(__o, Hashmap):
@@ -88,12 +105,6 @@ class Hashmap:
         if isinstance(__o, Hashmap):
             return len(self) >= len(__o)
         raise TypeError("(>=) operator could not wokrs between different classes types")
-
-    def __add__(self, __o: object):
-        if isinstance(__o, Hashmap):
-            for i in range(len(__o)):
-                self.append(__o[i])
-        raise TypeError("(+) operator could not wokrs between different classes types")
 
     def __len__(self) -> int:
         return self.__len
@@ -211,6 +222,11 @@ class Hashmap:
 
 #### using linear probing (closed hashing) for avoiding collision ####
 # class Hashmap:
+#     """ 
+#     in this class we deal with collisions using open addressing method (linear probing)
+#     - we need for a load factor in this class for rehashing (an other way to reduce collisions)
+#     - len func refer to a variable instead of an enture func to minimize the times of looping through this DS
+#      """
 #     def __init__(self, load_factor=0.75, size=17) -> None:
 #         self.__SIZE = size
 #         self.__THRESHOLD = load_factor
@@ -220,15 +236,19 @@ class Hashmap:
 #         self.__len = 0
 
 #     def __setitem__(self, key, value):
+#         """ change a node value based on its index """
 #         return self.append(key, value)
 
 #     def __getitem__(self, key):
+#         """ get a node value based on its index """
 #         return self.find(key)
 
 #     def __delitem__(self, key):
+#         """ remove a specific item from this DS """
 #         return self.remove(key)
 
 #     def __contains__(self, __o: object):
+#         """ return True if __o exist in this DS otherwise False """
 #         return True if self.find(__o) is not None or __o is self else False
 
 #     def __iter__(self):
@@ -240,6 +260,14 @@ class Hashmap:
 #             self.index += 1
 #             return self.__keys[self.index-1]
 #         raise StopIteration
+
+#     def __add__(self, __o):
+#         """ concatenate 2 data structures if they are from the same class """
+#         if isinstance(__o, Hashmap):
+#             for i in range(len(__o)):
+#                 self.append(__o.__keys[i], __o.__values[i])
+#             return self
+#         raise TypeError("(+) operator could not wokrs between different classes types")
 
 #     def __eq__(self, __o: object) -> bool:
 #         if isinstance(__o, Hashmap):
@@ -267,13 +295,6 @@ class Hashmap:
 #         if isinstance(__o, Hashmap):
 #             return len(self) >= len(__o)
 #         raise TypeError("(>=) operator could not wokrs between different classes types")
-
-#     def __add__(self, __o):
-#         if isinstance(__o, Hashmap):
-#             for i in range(len(__o)):
-#                 self.append(__o.__keys[i], __o.__values[i])
-#             return self
-#         raise TypeError("(+) operator could not wokrs between different classes types")
 
 #     def __len__(self):
 #         return self.__len
@@ -396,6 +417,11 @@ class Hashmap:
 
 # #### using quadratic probing (closed hashing) for avoiding collision ####
 # class Hashmap:
+#     """ 
+#     in this class we deal with collisions using open addressing method (quadratic probing)
+#     - we need for a load factor in this class for rehashing (an other way to reduce collisions)
+#     - len func refer to a variable instead of an enture func to minimize the times of looping through this DS
+#      """
 #     def __init__(self, load_factor=0.75, size=17) -> None:
 #         self.__SIZE = size
 #         self.__THRESHOLD = load_factor
@@ -405,15 +431,19 @@ class Hashmap:
 #         self.__len = 0
 
 #     def __setitem__(self, key, value):
+#         """ change a node value based on its index """
 #         return self.append(key, value)
 
 #     def __getitem__(self, key):
+#         """ get a node value based on its index """
 #         return self.find(key)
 
 #     def __delitem__(self, key):
+#         """ remove a specific item from this DS """
 #         return self.remove(key)
 
 #     def __contains__(self, __o: object):
+#         """ return True if __o exist in this DS otherwise False """
 #         return True if self.find(__o) is not None or __o is self else False
 
 #     def __iter__(self):
@@ -425,6 +455,14 @@ class Hashmap:
 #             self.index += 1
 #             return self.__keys[self.index-1]
 #         raise StopIteration
+
+#     def __add__(self, __o):
+#         """ concatenate 2 data structures if they are from the same class """
+#         if isinstance(__o, Hashmap):
+#             for i in range(len(__o)):
+#                 self.append(__o.__keys[i], __o.__values[i])
+#             return self
+#         raise TypeError("(+) operator could not wokrs between different classes types")
 
 #     def __eq__(self, __o: object) -> bool:
 #         if isinstance(__o, Hashmap):
@@ -452,13 +490,6 @@ class Hashmap:
 #         if isinstance(__o, Hashmap):
 #             return len(self) >= len(__o)
 #         raise TypeError("(>=) operator could not wokrs between different classes types")
-
-#     def __add__(self, __o):
-#         if isinstance(__o, Hashmap):
-#             for i in range(len(__o)):
-#                 self.append(__o.__keys[i], __o.__values[i])
-#             return self
-#         raise TypeError("(+) operator could not wokrs between different classes types")
 
 #     def __len__(self):
 #         return self.__len
@@ -584,6 +615,11 @@ class Hashmap:
 
 # #### using double hashing (closed hashing) for avoiding collision ####
 # class Hashmap:
+#     """ 
+#     in this class we deal with collisions using open addressing method (double hashing)
+#     - we need for a load factor in this class for rehashing (an other way to reduce collisions)
+#     - len func refer to a variable instead of an enture func to minimize the times of looping through this DS
+#      """
 #     def __init__(self, load_factor=0.75, size=17) -> None:
 #         self.__SIZE = size
 #         self.__THRESHOLD = load_factor
@@ -593,15 +629,19 @@ class Hashmap:
 #         self.__len = 0
 
 #     def __setitem__(self, key, value):
+#         """ change a node value based on its index """
 #         return self.append(key, value)
 
 #     def __getitem__(self, key):
+#         """ get a node value based on its index """
 #         return self.find(key)
 
 #     def __delitem__(self, key):
+#         """ remove a specific item from this DS """
 #         return self.remove(key)
 
 #     def __contains__(self, __o: object):
+#         """ return True if __o exist in this DS otherwise False """
 #         return True if self.find(__o) is not None or __o is self else False
 
 #     def __iter__(self):
@@ -613,6 +653,14 @@ class Hashmap:
 #             self.index += 1
 #             return self.__keys[self.index-1]
 #         raise StopIteration
+
+#     def __add__(self, __o):
+#         """ concatenate 2 data structures if they are from the same class """
+#         if isinstance(__o, Hashmap):
+#             for i in range(len(__o)):
+#                 self.append(__o.__keys[i], __o.__values[i])
+#             return self
+#         raise TypeError("(+) operator could not wokrs between different classes types")
 
 #     def __eq__(self, __o: object) -> bool:
 #         if isinstance(__o, Hashmap):
@@ -640,13 +688,6 @@ class Hashmap:
 #         if isinstance(__o, Hashmap):
 #             return len(self) >= len(__o)
 #         raise TypeError("(>=) operator could not wokrs between different classes types")
-
-#     def __add__(self, __o):
-#         if isinstance(__o, Hashmap):
-#             for i in range(len(__o)):
-#                 self.append(__o.__keys[i], __o.__values[i])
-#             return self
-#         raise TypeError("(+) operator could not wokrs between different classes types")
 
 #     def __len__(self):
 #         return self.__len
@@ -785,3 +826,4 @@ class Hashmap:
 #         return self.__values
 
 
+## Finished ##

@@ -24,50 +24,72 @@ class LinkedList:
 
     class SinglyLL:
         def __init__(self, head=None) -> None:
-            self.head = head
-            self.tail = None
-            self.len = 0
+            self.__head = head if not head else LinkedList.Node(head)
+            self.__tail = self.__head
+            self.__len = 0 if not self.__head else 1
 
-        def __contains__(self, __o: object) -> bool:
-            return True if type(self.getIndex(__o)) == int or self is __o else False
+        def __setitem__(self, index: int, value: object):
+            """ change a node value based on its index """
+            if index in range(self.__len):
+                self[index].value = value
 
         def __getitem__(self, index: int):
+            """ get a node value based on its index """
             return self.getData(index)
 
+        def __delitem__(self, __o: object):
+            """ remove a specific item from this DS """
+            return self.remove(__o)
+
+        def __contains__(self, __o: object) -> bool:
+            """ return True if __o exist in this DS otherwise False """
+            return True if type(self.getIndex(__o)) == int or self is __o else False
+
+        def __iter__(self):
+            self.index = 0
+            return self
+
+        def __next__(self):
+            if self.index < self.__len-1:
+                self.index += 1
+                return self[self.index-1]
+            raise StopIteration
+
         def __add__(self, __o: object):
+            """ concatenate 2 data structures if they are from the same class """
             if isinstance(__o, LinkedList.SinglyLL):
-                self.tail.next = __o.head
-                self.tail = __o.tail
-                self.len += __o.len
+                self.__tail.next = __o.__head
+                self.__tail = __o.__tail
+                self.__len += __o.__len
                 return self
             raise TypeError("(+) operator could not wokrs between different classes types")
 
         def __lt__(self, __o: object) -> bool:
             """ compare the length of two object of the same class """
             if isinstance(__o, LinkedList.SinglyLL):
-                return self.len < __o.len
+                return self.__len < __o.__len
             raise TypeError("(<) operator could not wokrs between different classes types")
 
         def __gt__(self, __o: object) -> bool:
             """ compare the length of two object of the same class """
             if isinstance(__o, LinkedList.SinglyLL):
-                return self.len > __o.len
+                return self.__len > __o.__len
             raise TypeError("(>) operator could not wokrs between different classes types")
 
         def __le__(self, __o: object) -> bool:
             """ compare the length of two object of the same class """
             if isinstance(__o, LinkedList.SinglyLL):
-                return self.len <= __o.len
+                return self.__len <= __o.__len
             raise TypeError("(<=) operator could not wokrs between different classes types")
 
         def __ge__(self, __o: object) -> bool:
             """ compare the length of two object of the same class """
             if isinstance(__o, LinkedList.SinglyLL):
-                return self.len >= __o.len
+                return self.__len >= __o.__len
             raise TypeError("(>=) operator could not wokrs between different classes types")
 
         def __len__(self) -> int:
-            return self.len
+            return self.__len
 
         def __repr__(self) -> str:
             return f"Linked List[type: Singly]({str(self.toList())})"
@@ -76,15 +98,15 @@ class LinkedList:
             return f"({self.toList()})"
 
         def isEmpty(self) -> bool:
-            return self.len == 0
+            return self.__len == 0
 
         def getIndex(self, data):
             f""" raise ValueError if the {self.__class__.__name__} is empty """
             if self.isEmpty():
                 raise ValueError(f"Empty {self.__class__.__name__}") 
-            elif data == self.tail.value:
-                return self.len - 1
-            curr_item = self.head
+            elif data == self.__tail.value:
+                return self.__len - 1
+            curr_item = self.__head
             index = 0
             while curr_item.value != data:
                 if curr_item.next is None:
@@ -99,9 +121,9 @@ class LinkedList:
             2/ to print the value if the node use .value """
             if not isinstance(index, int):
                 raise TypeError("index must be an integer")
-            if index >= self.len or index < 0:
+            if index >= self.__len or index < 0:
                 raise IndexError(f"index range must be from 0 to len({self.__class__.__name__})")
-            curr_item = self.head
+            curr_item = self.__head
             count = 0
             while count != index:
                 curr_item = curr_item.next
@@ -115,13 +137,13 @@ class LinkedList:
                 raise ValueError(f"empty {self.__class__.__name__}")
             if not self.getIndex(data):
                 raise ValueError(f"{data} does not exist")
-            curr_item = self.head
+            curr_item = self.__head
             times = 0
-            while curr_item != self.tail:
+            while curr_item != self.__tail:
                 if curr_item.value == data:
                     times += 1
                 curr_item = curr_item.next
-            if self.tail.value == data:
+            if self.__tail.value == data:
                 times += 1
             return times
 
@@ -137,9 +159,9 @@ class LinkedList:
             f""" convert a {self.__class__.__name__} into a python list """
             if self.isEmpty():
                 return []
-            elif self.head.next is None:
-                return [self.head.value]
-            curr_item = self.head
+            elif self.__head.next is None:
+                return [self.__head.value]
+            curr_item = self.__head
             result = []
             while curr_item.next is not None:
                 result.append(curr_item.value)
@@ -151,77 +173,77 @@ class LinkedList:
             f""" insert a node at the end of the {self.__class__.__name__} """
             node = LinkedList.Node(data)
             if self.isEmpty():
-                self.head = node
-                self.tail = node
-                self.len += 1
+                self.__head = node
+                self.__tail = node
+                self.__len += 1
                 return
-            if self.head.next is None:
-                self.head.next = node
-                self.tail = node
-                self.len += 1
+            if self.__head.next is None:
+                self.__head.next = node
+                self.__tail = node
+                self.__len += 1
                 return
-            self.tail.next = node
-            self.tail = node
-            self.len += 1
+            self.__tail.next = node
+            self.__tail = node
+            self.__len += 1
             return
         
         def insert(self, data, index=0) -> None:
             f""" if the {self.__class__.__name__} is empty so this method will ignore the index arg """
             node = LinkedList.Node(data)
             if self.isEmpty():
-                self.head = node
-                self.tail = node
-                self.len += 1
+                self.__head = node
+                self.__tail = node
+                self.__len += 1
                 return
             if index == 0:
-                if self.tail is None:
-                    self.tail = self.head
-                node.next = self.head
-                self.head = node
-                self.len += 1
+                if self.__tail is None:
+                    self.__tail = self.__head
+                node.next = self.__head
+                self.__head = node
+                self.__len += 1
                 return
-            elif index >= self.len:
-                self.tail.next = node
-                self.tail = node
-                self.len += 1
+            elif index >= self.__len:
+                self.__tail.next = node
+                self.__tail = node
+                self.__len += 1
                 return
             curr_item = self.getData(index-1)
             node.next = curr_item.next
             curr_item.next = node
-            self.tail = node
-            self.len += 1
+            self.__tail = node
+            self.__len += 1
             return
 
         def pop(self):
             f""" remove the last element of this {self.__class__.__name__} """
             if self.isEmpty():
                 raise ValueError(f"empty {self.__class__.__name__}")
-            if self.head.next is None:
-                del_item = self.head.value
-                self.head = None
-                self.len -= 1
+            if self.__head.next is None:
+                del_item = self.__head.value
+                self.__head = None
+                self.__len -= 1
                 return  del_item
-            del_item = self.tail.value
-            curr_item = self.head
-            while curr_item.next != self.tail:
+            del_item = self.__tail.value
+            curr_item = self.__head
+            while curr_item.next != self.__tail:
                 curr_item = curr_item.next
             curr_item.next = None
-            self.tail = curr_item
-            self.len -= 1
+            self.__tail = curr_item
+            self.__len -= 1
             return del_item
 
         def remove(self, value):
             f""" raise ValueError if the {self.__class__.__name__} is empty or if the value does not exist """
             if self.isEmpty():
                 raise ValueError(f"Empty {self.__class__.__name__}")
-            elif self.head.next is None and self.head.value != value:
+            elif self.__head.next is None and self.__head.value != value:
                 raise ValueError(f"{value} does not exist")
-            elif self.head.value == value:
-                self.head = self.head.next
-                self.len -= 1
+            elif self.__head.value == value:
+                self.__head = self.__head.next
+                self.__len -= 1
                 return
-            curr_item = self.head
-            next_item = self.head.next
+            curr_item = self.__head
+            next_item = self.__head.next
             while next_item.value != value:
                 if next_item.next is None:
                     raise ValueError(f"{value} does not exist")
@@ -229,27 +251,27 @@ class LinkedList:
                 next_item = next_item.next
             if next_item.next is None:
                 curr_item.next = None
-                self.tail = curr_item
-                self.len -= 1
+                self.__tail = curr_item
+                self.__len -= 1
                 return
             curr_item.next = next_item.next
-            self.len -= 1
+            self.__len -= 1
             return
 
         def clear(self):
             f""" remove all this {self.__class__.__name__} elements """
-            self.head = None
-            self.tail = None
-            self.len = 0
+            self.__head = None
+            self.__tail = None
+            self.__len = 0
 
         def display(self):
             f""" showing this {self.__class__.__name__} in a nice & readable way """
             if self.isEmpty():
                 return
-            elif self.head.next is None:
-                print(self.head.value)
+            elif self.__head.next is None:
+                print(self.__head.value)
                 return
-            curr_item = self.head
+            curr_item = self.__head
             result = ""
             while curr_item.next is not None:
                 result += str(curr_item.value) + " --> "
@@ -261,51 +283,73 @@ class LinkedList:
 
     class DoublyLL:
         def __init__(self, head=None) -> None:
-            self.head = head
-            self.tail = None
-            self.len = 0
+            self.__head = head
+            self.__tail = None
+            self.__len = 0
 
-        def __contains__(self, __o: object) -> bool:
-            return True if type(self.getIndex(__o)) == int or self is __o else False
+        def __setitem__(self, index: int, value: object):
+            """ change a node value based on its index """
+            if index in range(self.__len):
+                self[index].value = value
 
         def __getitem__(self, index: int):
+            """ get a node value based on its index """
             return self.getData(index)
 
+        def __delitem__(self, __o: object):
+            """ remove a specific item from this DS """
+            return self.remove(__o)
+
+        def __contains__(self, __o: object) -> bool:
+            """ return True if __o exist in this DS otherwise False """
+            return True if type(self.getIndex(__o)) == int or self is __o else False
+
+        def __iter__(self):
+            self.index = 0
+            return self
+
+        def __next__(self):
+            if self.index < self.__len-1:
+                self.index += 1
+                return self[self.index-1]
+            raise StopIteration
+
         def __add__(self, __o: object):
+            """ concatenate 2 data structures if they are from the same class """
             if isinstance(__o, LinkedList.DoublyLL):
-                self.tail.next = __o.head
-                __o.head.prev = self.tail
-                self.tail = __o.tail
-                self.len += __o.len
+                self.__tail.next = __o.__head
+                __o.__head.prev = self.__tail
+                self.__tail = __o.__tail
+                self.__len += __o.__len
                 return self
             raise TypeError("(+) operator could not wokrs between different classes types")
 
         def __lt__(self, __o: object) -> bool:
             """ compare the length of two object of the same class """
             if isinstance(__o, LinkedList.DoublyLL):
-                return self.len < __o.len
+                return self.__len < __o.__len
             raise TypeError("(<) operator could not wokrs between different classes types")
 
         def __gt__(self, __o: object) -> bool:
             """ compare the length of two object of the same class """
             if isinstance(__o, LinkedList.DoublyLL):
-                return self.len > __o.len
+                return self.__len > __o.__len
             raise TypeError("(>) operator could not wokrs between different classes types")
 
         def __le__(self, __o: object) -> bool:
             """ compare the length of two object of the same class """
             if isinstance(__o, LinkedList.DoublyLL):
-                return self.len <= __o.len
+                return self.__len <= __o.__len
             raise TypeError("(<=) operator could not wokrs between different classes types")
 
         def __ge__(self, __o: object) -> bool:
             """ compare the length of two object of the same class """
             if isinstance(__o, LinkedList.DoublyLL):
-                return self.len >= __o.len
+                return self.__len >= __o.__len
             raise TypeError("(>=) operator could not wokrs between different classes types")
 
         def __len__(self) -> int:
-            return self.len
+            return self.__len
 
         def __repr__(self) -> str:
             return f"Linked List[type: Doubly]({self.toList()})"
@@ -314,15 +358,15 @@ class LinkedList:
             return f"({self.toList()})"
 
         def isEmpty(self):
-            return self.len == 0
+            return self.__len == 0
 
         def getIndex(self, data):
             f""" raise ValueError if the {self.__class__.__name__} is empty """
             if self.isEmpty():
                 raise ValueError(f"Empty {self.__class__.__name__}")
-            if data == self.tail.value:
-                return self.len - 1
-            curr_item = self.head
+            if data == self.__tail.value:
+                return self.__len - 1
+            curr_item = self.__head
             index = 0
             while curr_item.value != data:
                 if curr_item.next is None:
@@ -337,16 +381,16 @@ class LinkedList:
             2/ to print the value if the node use .value """
             if not isinstance(index, int):
                 raise TypeError("index must be an integer")
-            elif index >= self.len or index < -self.len:
+            elif index >= self.__len or index < -self.__len:
                 raise IndexError(f"{self.__class__.__name__} index out of range")
-            elif index in range(-1, -self.len-1, -1):
-                curr_item = self.tail
+            elif index in range(-1, -self.__len-1, -1):
+                curr_item = self.__tail
                 count = -1
                 while index != count:
                     curr_item = curr_item.prev
                     count -= 1
                 return curr_item
-            curr_item = self.head
+            curr_item = self.__head
             count = 0
             while count != index:
                 curr_item = curr_item.next
@@ -360,13 +404,13 @@ class LinkedList:
                 raise ValueError(f"empty {self.__class__.__name__}")
             if not self.getIndex(data):
                 raise ValueError(f"{data} does not exist")
-            curr_item = self.head
+            curr_item = self.__head
             times = 0
-            while curr_item != self.tail:
+            while curr_item != self.__tail:
                 if curr_item.value == data:
                     times += 1
                 curr_item = curr_item.next
-            if self.tail.value == data:
+            if self.__tail.value == data:
                 times += 1
             return times
 
@@ -382,9 +426,9 @@ class LinkedList:
             f""" convert a {self.__class__.__name__} into a python list """
             if self.isEmpty():
                 return []
-            elif self.head.next is None:
-                return [self.head.value]
-            curr_item = self.head
+            elif self.__head.next is None:
+                return [self.__head.value]
+            curr_item = self.__head
             result = []
             while curr_item.next is not None:
                 result.append(curr_item.value)
@@ -396,98 +440,98 @@ class LinkedList:
             f""" insert a node at the end of the {self.__class__.__name__} """
             node = LinkedList.Node(data)
             if self.isEmpty():
-                self.head = node
-                self.len += 1
+                self.__head = node
+                self.__len += 1
                 return
-            if self.head.next is None:
-                node.prev = self.head
-                self.head.next = node
-                self.tail = node
-                self.len += 1
+            if self.__head.next is None:
+                node.prev = self.__head
+                self.__head.next = node
+                self.__tail = node
+                self.__len += 1
                 return
-            self.tail.next = node
-            node.prev = self.tail
-            self.tail = node
-            self.len += 1
+            self.__tail.next = node
+            node.prev = self.__tail
+            self.__tail = node
+            self.__len += 1
             return
         
         def appendFirst(self, data) -> None:
             f""" insert a node at the 0 index of the {self.__class__.__name__} """
             node = LinkedList.Node(data)
             if self.isEmpty():
-                self.head = node
-                self.len += 1
+                self.__head = node
+                self.__len += 1
                 return
-            if self.head.next is None:
-                self.head.prev = node
-                node.next = self.head
-                self.tail = self.head
-                self.head = node
-                self.len += 1
+            if self.__head.next is None:
+                self.__head.prev = node
+                node.next = self.__head
+                self.__tail = self.__head
+                self.__head = node
+                self.__len += 1
                 return
-            self.head.prev = node
-            node.next = self.head
-            self.head = node
-            self.len += 1
+            self.__head.prev = node
+            node.next = self.__head
+            self.__head = node
+            self.__len += 1
             return
         
         def insert(self, data, index=0) -> None:
             f""" if the {self.__class__.__name__} is empty so this method will ignore the index arg """
             node = LinkedList.Node(data)
             if self.isEmpty():
-                self.head = node
-                self.len += 1
+                self.__head = node
+                self.__len += 1
                 return
             if index == 0:
-                if self.tail is None:
-                    self.head.next = node
-                    self.tail = self.head
-                    self.tail.next = None
-                self.head.prev = node
-                node.next = self.head
-                self.head = node
-                self.len += 1
+                if self.__tail is None:
+                    self.__head.next = node
+                    self.__tail = self.__head
+                    self.__tail.next = None
+                self.__head.prev = node
+                node.next = self.__head
+                self.__head = node
+                self.__len += 1
                 return
-            elif index >= self.len:
-                self.tail.next = node
-                node.prev = self.tail
-                self.tail = node
-                self.len += 1
+            elif index >= self.__len:
+                self.__tail.next = node
+                node.prev = self.__tail
+                self.__tail = node
+                self.__len += 1
                 return
             curr_item = self.getData(index)
             node.prev = curr_item.prev
             node.next = curr_item
             curr_item.prev.next = node
             curr_item.prev = node
-            self.len += 1
+            self.__len += 1
             return
 
         def pop(self):
             f""" remove the last element of the {self.__class__.__name__} """
             if self.isEmpty():
                 raise ValueError(f"empty {self.__class__.__name__}")
-            if self.head.next is None:
-                del_item = self.head
-                self.head = None
-                self.len -= 1
+            if self.__head.next is None:
+                del_item = self.__head
+                self.__head = None
+                self.__len -= 1
                 return del_item
-            del_item = self.tail.value
-            self.tail.prev.next = None
-            self.tail = self.tail.prev
-            self.len -= 1
+            del_item = self.__tail.value
+            self.__tail.prev.next = None
+            self.__tail = self.__tail.prev
+            self.__len -= 1
             return del_item
 
         def remove(self, value):
             f""" raise ValueError if the {self.__class__.__name__} is empty or if the value does not exist """
             if self.isEmpty():
                 raise ValueError(f"Empty {self.__class__.__name__}")
-            elif self.head.next is None and self.head.value != value:
+            elif self.__head.next is None and self.__head.value != value:
                 raise ValueError(f"{value} does not exist")
-            elif self.head.value == value:
-                self.head = self.head.next
-                self.len -= 1
+            elif self.__head.value == value:
+                self.__head = self.__head.next
+                self.__len -= 1
                 return
-            curr_item = self.head
+            curr_item = self.__head
             while curr_item.value != value:
                 if curr_item.next is None:
                     raise ValueError(f"{value} does not exist")
@@ -495,28 +539,28 @@ class LinkedList:
             if curr_item.value == value:
                 if curr_item.next is None:
                     curr_item.prev.next = None
-                    self.tail = curr_item.prev
-                    self.len -= 1
+                    self.__tail = curr_item.prev
+                    self.__len -= 1
                     return
                 curr_item.prev.next = curr_item.next
                 curr_item.next.prev = curr_item.prev
-                self.len -= 1
+                self.__len -= 1
                 return
 
         def clear(self):
             f""" remove all this {self.__class__.__name__} elements """
-            self.head = None
-            self.tail = None
-            self.len = 0
+            self.__head = None
+            self.__tail = None
+            self.__len = 0
 
         def display(self):
             f""" showing this {self.__class__.__name__} in a nice & readable way """
             if self.isEmpty():
                 return
-            if self.head.next is None:
-                print(self.head.value)
+            if self.__head.next is None:
+                print(self.__head.value)
                 return
-            curr_item = self.head
+            curr_item = self.__head
             result = ""
             while curr_item.next is not None:
                 result += str(curr_item.value) + " <--> "
@@ -527,49 +571,71 @@ class LinkedList:
 
     class CircularLL:
         def __init__(self, head=None) -> None:
-            self.head = head
-            self.tail = None
-            self.len = 0
+            self.__head = head
+            self.__tail = None
+            self.__len = 0
 
-        def __contains__(self, __o: object) -> bool:
-            return True if type(self.getIndex(__o)) == int or self is __o else False
+        def __setitem__(self, index: int, value: object):
+            """ change a node value based on its index """
+            if index in range(self.__len):
+                self[index].value = value
 
         def __getitem__(self, index: int):
+            """ get a node value based on its index """
             return self.getData(index)
 
+        def __delitem__(self, __o: object):
+            """ remove a specific item from this DS """
+            return self.remove(__o)
+
+        def __contains__(self, __o: object) -> bool:
+            """ return True if __o exist in this DS otherwise False """
+            return True if type(self.getIndex(__o)) == int or self is __o else False
+
+        def __iter__(self):
+            self.index = 0
+            return self
+
+        def __next__(self):
+            if self.index < self.__len-1:
+                self.index += 1
+                return self[self.index-1]
+            raise StopIteration
+
         def __add__(self, __o: object):
+            """ concatenate 2 data structures if they are from the same class """
             if isinstance(__o, LinkedList.CircularLL):
-                self.tail.next = __o.head
-                self.len += __o.len
+                self.__tail.next = __o.__head
+                self.__len += __o.__len
                 return self
             raise TypeError("(+) operator could not wokrs between different classes types")
 
         def __lt__(self, __o: object) -> bool:
             """ compare the length of two object of the same class """
             if isinstance(__o, LinkedList.CircularLL):
-                return self.len < __o.len
+                return self.__len < __o.__len
             raise TypeError("(<) operator could not wokrs between different classes types")
 
         def __gt__(self, __o: object) -> bool:
             """ compare the length of two object of the same class """
             if isinstance(__o, LinkedList.CircularLL):
-                return self.len > __o.len
+                return self.__len > __o.__len
             raise TypeError("(>) operator could not wokrs between different classes types")
 
         def __le__(self, __o: object) -> bool:
             """ compare the length of two object of the same class """
             if isinstance(__o, LinkedList.CircularLL):
-                return self.len <= __o.len
+                return self.__len <= __o.__len
             raise TypeError("(<=) operator could not wokrs between different classes types")
 
         def __ge__(self, __o: object) -> bool:
             """ compare the length of two object of the same class """
             if isinstance(__o, LinkedList.CircularLL):
-                return self.len >= __o.len
+                return self.__len >= __o.__len
             raise TypeError("(>=) operator could not wokrs between different classes types")
 
         def __len__(self) -> int:
-            return self.len
+            return self.__len
 
         def __repr__(self) -> str:
             return f"Linked List[type: Circular]({self.toList()})"
@@ -578,18 +644,18 @@ class LinkedList:
             return f"({self.toList()})"
 
         def isEmpty(self):
-            return self.len == 0
+            return self.__len == 0
 
         def getIndex(self, data):
             f""" raise ValueError if the {self.__class__.__name__} is empty """
             if self.isEmpty():
                 raise ValueError(f"Empty {self.__class__.__name__}")
-            if data == self.tail.value:
-                return self.len - 1
-            curr_item = self.head
+            if data == self.__tail.value:
+                return self.__len - 1
+            curr_item = self.__head
             index = 0
             while curr_item.value != data:
-                if curr_item.next == self.head:
+                if curr_item.next == self.__head:
                     return None
                 curr_item = curr_item.next
                 index += 1
@@ -601,9 +667,9 @@ class LinkedList:
             2/ to print the value if the node use .value """
             if not isinstance(index, int):
                 raise TypeError("index must be an integer")
-            if index >= self.len or index < 0:
+            if index >= self.__len or index < 0:
                 raise IndexError(f"index range must be from 0 to len({self.__class__.__name__})")
-            curr_item = self.head
+            curr_item = self.__head
             count = 0
             while count != index:
                 curr_item = curr_item.next
@@ -615,13 +681,13 @@ class LinkedList:
             f""" counting the number of the same item in this {self.__class__.__name__} """
             if self.isEmpty():
                 raise ValueError(f"empty {self.__class__.__name__}")
-            curr_item = self.head
+            curr_item = self.__head
             times = 0
-            while curr_item != self.tail:
+            while curr_item != self.__tail:
                 if curr_item.value == data:
                     times += 1
                 curr_item = curr_item.next
-            if self.tail.value == data:
+            if self.__tail.value == data:
                 times += 1
             return times
 
@@ -637,11 +703,11 @@ class LinkedList:
             f""" convert a {self.__class__.__name__} into a python list """
             if self.isEmpty():
                 return []
-            elif self.head.next is None:
-                return [self.head.value]
-            curr_item = self.head
+            elif self.__head.next is None:
+                return [self.__head.value]
+            curr_item = self.__head
             result = []
-            while curr_item.next != self.head:
+            while curr_item.next != self.__head:
                 result.append(curr_item.value)
                 curr_item = curr_item.next
             result.append(curr_item.value)
@@ -651,109 +717,109 @@ class LinkedList:
             f""" insert a node at the end of the {self.__class__.__name__} """
             node = LinkedList.Node(data)
             if self.isEmpty():
-                self.head = node
-                self.len += 1
+                self.__head = node
+                self.__len += 1
                 return
-            if self.head.next is None:
-                node.next = self.head
-                self.head.next = node
-                self.tail = node
-                self.len += 1
+            if self.__head.next is None:
+                node.next = self.__head
+                self.__head.next = node
+                self.__tail = node
+                self.__len += 1
                 return
-            self.tail.next = node
-            node.next = self.head
-            self.tail = node
-            self.len += 1
+            self.__tail.next = node
+            node.next = self.__head
+            self.__tail = node
+            self.__len += 1
             return
 
         def insert(self, data, index=0) -> None:
             f""" if the {self.__class__.__name__} is empty so this method will ignore the index arg """
             node = LinkedList.Node(data)
             if self.isEmpty():
-                self.head = node
-                self.len += 1
+                self.__head = node
+                self.__len += 1
                 return
             if index == 0:
-                if self.tail is None:
-                    self.tail = self.head
-                node.next = self.head
-                self.tail.next = node
-                self.head = node
-                self.len += 1
+                if self.__tail is None:
+                    self.__tail = self.__head
+                node.next = self.__head
+                self.__tail.next = node
+                self.__head = node
+                self.__len += 1
                 return
-            elif index >= self.len:
-                self.tail.next = node
-                node.next = self.head
-                self.tail = node
-                self.len += 1
+            elif index >= self.__len:
+                self.__tail.next = node
+                node.next = self.__head
+                self.__tail = node
+                self.__len += 1
                 return
             curr_item = self.getData(index-1)
             node.next = curr_item.next
             curr_item.next = node
-            self.len += 1
+            self.__len += 1
             return
 
         def pop(self):
             f""" remove the last element of this {self.__class__.__name__} """
             if self.isEmpty():
                 raise ValueError(f"empty {self.__class__.__name__}")
-            if self.head.next is None:
-                del_item = self.head.value
-                self.head = None
-                self.len -= 1
+            if self.__head.next is None:
+                del_item = self.__head.value
+                self.__head = None
+                self.__len -= 1
                 return  del_item
-            del_item = self.tail.value
-            curr_item = self.head
-            while curr_item.next != self.tail:
+            del_item = self.__tail.value
+            curr_item = self.__head
+            while curr_item.next != self.__tail:
                 curr_item = curr_item.next
-            self.tail = curr_item
-            curr_item.next = self.head
-            self.len -= 1
+            self.__tail = curr_item
+            curr_item.next = self.__head
+            self.__len -= 1
             return del_item
 
         def remove(self, value):
             f""" raise ValueError if the {self.__class__.__name__} is empty or if the value does not exist """
             if self.isEmpty():
                 raise ValueError(f"Empty {self.__class__.__name__}")
-            elif self.head.next is None and self.head.value != value:
+            elif self.__head.next is None and self.__head.value != value:
                 raise ValueError(f"{value} does not exist")
-            elif self.head.value == value:
-                self.head = self.head.next
-                self.tail.next = self.head
-                self.len -= 1
+            elif self.__head.value == value:
+                self.__head = self.__head.next
+                self.__tail.next = self.__head
+                self.__len -= 1
                 return
-            curr_item = self.head
-            next_item = self.head.next
+            curr_item = self.__head
+            next_item = self.__head.next
             while next_item.value != value:
-                if next_item.next == self.head:
+                if next_item.next == self.__head:
                     raise ValueError(f"{value} does not exist")
                 curr_item = next_item
                 next_item = next_item.next
-            if next_item.next == self.head:
-                curr_item.next = self.head
-                self.tail = curr_item
-                self.len -= 1
+            if next_item.next == self.__head:
+                curr_item.next = self.__head
+                self.__tail = curr_item
+                self.__len -= 1
                 return
             curr_item.next = next_item.next
-            self.len -= 1
+            self.__len -= 1
             return
 
         def clear(self):
             f""" remove all this {self.__class__.__name__} elements """
-            self.head = None
-            self.tail = None
-            self.len = 0
+            self.__head = None
+            self.__tail = None
+            self.__len = 0
 
         def display(self):
             f""" showing this {self.__class__.__name__} in a nice & readable way """
             if self.isEmpty():
                 return
-            elif self.head.next is None:
-                print(self.head.value)
+            elif self.__head.next is None:
+                print(self.__head.value)
                 return
-            curr_item = self.head
+            curr_item = self.__head
             result = ""
-            while curr_item.next != self.head:
+            while curr_item.next != self.__head:
                 result += str(curr_item.value) + " --> "
                 curr_item = curr_item.next
             result += str(curr_item.value) + " --> [first_item]"
@@ -762,53 +828,75 @@ class LinkedList:
 
     class CircularDoublyLL:
         def __init__(self, head=None) -> None:
-            self.head = head
-            self.tail = None
-            self.len = 0
+            self.__head = head
+            self.__tail = None
+            self.__len = 0
 
-        def __contains__(self, __o: object) -> bool:
-            return True if type(self.getIndex(__o)) == int or self is __o else False
+        def __setitem__(self, index: int, value: object):
+            """ change a node value based on its index """
+            if index in range(self.__len):
+                self[index].value = value
 
         def __getitem__(self, index: int):
+            """ get a node value based on its index """
             return self.getData(index)
 
+        def __delitem__(self, __o: object):
+            """ remove a specific item from this DS """
+            return self.remove(__o)
+
+        def __contains__(self, __o: object) -> bool:
+            """ return True if __o exist in this DS otherwise False """
+            return True if type(self.getIndex(__o)) == int or self is __o else False
+
+        def __iter__(self):
+            self.index = 0
+            return self
+
+        def __next__(self):
+            if self.index < self.__len-1:
+                self.index += 1
+                return self[self.index-1]
+            raise StopIteration
+
         def __add__(self, __o: object):
+            """ concatenate 2 data structures if they are from the same class """
             if isinstance(__o, LinkedList.CircularDoublyLL):
-                self.tail.next = __o.head
-                __o.head.prev = self.tail
-                self.head.prev = __o.tail
-                __o.tail.next = self.head
-                self.tail = __o.tail
-                self.len += __o.len
+                self.__tail.next = __o.__head
+                __o.__head.prev = self.__tail
+                self.__head.prev = __o.__tail
+                __o.__tail.next = self.__head
+                self.__tail = __o.__tail
+                self.__len += __o.__len
                 return self
             raise TypeError("(+) operator could not wokrs between different classes types")
 
         def __lt__(self, __o: object) -> bool:
             """ compare the length of two object of the same class """
             if isinstance(__o, LinkedList.CircularDoublyLL):
-                return self.len < __o.len
+                return self.__len < __o.__len
             raise TypeError("(<) operator could not wokrs between different classes types")
 
         def __gt__(self, __o: object) -> bool:
             """ compare the length of two object of the same class """
             if isinstance(__o, LinkedList.CircularDoublyLL):
-                return self.len > __o.len
+                return self.__len > __o.__len
             raise TypeError("(>) operator could not wokrs between different classes types")
 
         def __le__(self, __o: object) -> bool:
             """ compare the length of two object of the same class """
             if isinstance(__o, LinkedList.CircularDoublyLL):
-                return self.len <= __o.len
+                return self.__len <= __o.__len
             raise TypeError("(<=) operator could not wokrs between different classes types")
 
         def __ge__(self, __o: object) -> bool:
             """ compare the length of two object of the same class """
             if isinstance(__o, LinkedList.CircularDoublyLL):
-                return self.len >= __o.len
+                return self.__len >= __o.__len
             raise TypeError("(>=) operator could not wokrs between different classes types")
 
         def __len__(self) -> int:
-            return self.len
+            return self.__len
 
         def __repr__(self) -> str:
             return f"Linked List[type: Circular Doubly]({self.toList()})"
@@ -817,15 +905,15 @@ class LinkedList:
             return f"({self.toList()})"
 
         def isEmpty(self):
-            return self.len == 0
+            return self.__len == 0
 
         def getIndex(self, data):
             f""" raise ValueError if the {self.__class__.__name__} is empty """
             if self.isEmpty():
                 raise ValueError(f"Empty {self.__class__.__name__}")
-            if data == self.tail.value:
-                return self.len - 1
-            curr_item = self.head
+            if data == self.__tail.value:
+                return self.__len - 1
+            curr_item = self.__head
             index = 0
             while curr_item.value != data:
                 if curr_item.next is None:
@@ -840,16 +928,16 @@ class LinkedList:
             2/ to print the value if the node use .value """
             if not isinstance(index, int):
                 raise TypeError("index must be an integer")
-            elif index >= self.len or index < -self.len:
+            elif index >= self.__len or index < -self.__len:
                 raise IndexError(f"{self.__class__.__name__} index out of range")
-            elif index in range(-1, -self.len-1, -1):
-                curr_item = self.tail
+            elif index in range(-1, -self.__len-1, -1):
+                curr_item = self.__tail
                 count = -1
                 while index != count:
                     curr_item = curr_item.prev
                     count -= 1
                 return curr_item
-            curr_item = self.head
+            curr_item = self.__head
             count = 0
             while count != index:
                 curr_item = curr_item.next
@@ -863,13 +951,13 @@ class LinkedList:
                 raise ValueError(f"empty {self.__class__.__name__}")
             if not self.getIndex(data):
                 raise ValueError(f"{data} does not exist")
-            curr_item = self.head
+            curr_item = self.__head
             times = 0
-            while curr_item != self.tail:
+            while curr_item != self.__tail:
                 if curr_item.value == data:
                     times += 1
                 curr_item = curr_item.next
-            if self.tail.value == data:
+            if self.__tail.value == data:
                 times += 1
             return times
 
@@ -885,11 +973,11 @@ class LinkedList:
             f""" convert a {self.__class__.__name__} into a python list """
             if self.isEmpty():
                 return []
-            elif self.head.next is None:
-                return [self.head.value]
-            curr_item = self.head
+            elif self.__head.next is None:
+                return [self.__head.value]
+            curr_item = self.__head
             result = []
-            while curr_item.next != self.head:
+            while curr_item.next != self.__head:
                 result.append(curr_item.value)
                 curr_item = curr_item.next
             result.append(curr_item.value)
@@ -899,140 +987,140 @@ class LinkedList:
             f""" insert a node at the end of the {self.__class__.__name__} """
             node = LinkedList.Node(data)
             if self.isEmpty():
-                self.head = node
-                self.len += 1
+                self.__head = node
+                self.__len += 1
                 return
-            if self.head.next is None:
-                node.prev = self.head
-                node.next = self.head
-                self.head.next = node
-                self.head.prev = node
-                self.tail = node
-                self.len += 1
+            if self.__head.next is None:
+                node.prev = self.__head
+                node.next = self.__head
+                self.__head.next = node
+                self.__head.prev = node
+                self.__tail = node
+                self.__len += 1
                 return
-            self.tail.next = node
-            self.head.prev = node
-            node.prev = self.tail
-            node.next = self.head
-            self.tail = node
-            self.len += 1
+            self.__tail.next = node
+            self.__head.prev = node
+            node.prev = self.__tail
+            node.next = self.__head
+            self.__tail = node
+            self.__len += 1
             return
         
         def appendFirst(self, data) -> None:
             f""" insert a node at the 0 index of the {self.__class__.__name__} """
             node = LinkedList.Node(data)
             if self.isEmpty():
-                self.head = node
-                self.len += 1
+                self.__head = node
+                self.__len += 1
                 return
-            if self.head.next is None:
-                self.head.prev = node
-                self.head.next = node
-                node.next = self.head
-                node.prev = self.head
-                self.tail = self.head
-                self.head = node
-                self.len += 1
+            if self.__head.next is None:
+                self.__head.prev = node
+                self.__head.next = node
+                node.next = self.__head
+                node.prev = self.__head
+                self.__tail = self.__head
+                self.__head = node
+                self.__len += 1
                 return
-            self.head.prev = node
-            self.tail.next = node
-            node.next = self.head
-            node.prev = self.tail
-            self.head = node
-            self.len += 1
+            self.__head.prev = node
+            self.__tail.next = node
+            node.next = self.__head
+            node.prev = self.__tail
+            self.__head = node
+            self.__len += 1
             return
         
         def insert(self, data, index=0) -> None:
             f""" if the {self.__class__.__name__} is empty so this method will ignore the index arg """
             node = LinkedList.Node(data)
             if self.isEmpty():
-                self.head = node
-                self.len += 1
+                self.__head = node
+                self.__len += 1
                 return
             if index == 0:
-                if self.tail is None:
-                    self.head.next = node
-                    self.tail = self.head
-                self.head.prev = node
-                node.next = self.head
-                node.prev = self.tail
-                self.tail.next = node
-                self.head = node
-                self.len += 1
+                if self.__tail is None:
+                    self.__head.next = node
+                    self.__tail = self.__head
+                self.__head.prev = node
+                node.next = self.__head
+                node.prev = self.__tail
+                self.__tail.next = node
+                self.__head = node
+                self.__len += 1
                 return
-            elif index >= self.len:
-                self.tail.next = node
-                node.prev = self.tail
-                node.next = self.head
-                self.tail = node
-                self.len += 1
+            elif index >= self.__len:
+                self.__tail.next = node
+                node.prev = self.__tail
+                node.next = self.__head
+                self.__tail = node
+                self.__len += 1
                 return
             curr_item = self.getData(index)
             node.prev = curr_item.prev
             node.next = curr_item
             curr_item.prev.next = node
             curr_item.prev = node
-            self.len += 1
+            self.__len += 1
             return
 
         def pop(self):
             f""" remove the last element of this {self.__class__.__name__} """
             if self.isEmpty():
                 raise ValueError(f"empty {self.__class__.__name__}")
-            if self.head.next is None:
-                del_item = self.head.value
-                self.head = None
-                self.len -= 1
+            if self.__head.next is None:
+                del_item = self.__head.value
+                self.__head = None
+                self.__len -= 1
                 return  del_item
-            del_item = self.tail.value
-            self.tail.prev.next = self.head
-            self.tail = self.tail.prev
-            self.head.prev = self.tail
-            self.len -= 1
+            del_item = self.__tail.value
+            self.__tail.prev.next = self.__head
+            self.__tail = self.__tail.prev
+            self.__head.prev = self.__tail
+            self.__len -= 1
             return del_item
 
         def remove(self, value):
             f""" raise ValueError if the {self.__class__.__name__} is empty or if the value does not exist """
             if self.isEmpty():
                 raise ValueError(f"Empty {self.__class__.__name__}")
-            elif self.head.next is None and self.head.value != value:
+            elif self.__head.next is None and self.__head.value != value:
                 raise ValueError(f"{value} does not exist")
-            elif self.head.value == value:
-                self.head = self.head.next
-                self.tail.next = self.head
-                self.len -= 1
+            elif self.__head.value == value:
+                self.__head = self.__head.next
+                self.__tail.next = self.__head
+                self.__len -= 1
                 return
-            curr_item = self.head
+            curr_item = self.__head
             while curr_item.value != value:
                 if curr_item.next is None:
                     raise ValueError(f"{value} does not exist")
                 curr_item = curr_item.next
             if curr_item.value == value:
-                if curr_item.next == self.head:
-                    curr_item.prev.next = self.head
-                    self.tail = curr_item.prev
-                    self.len -= 1
+                if curr_item.next == self.__head:
+                    curr_item.prev.next = self.__head
+                    self.__tail = curr_item.prev
+                    self.__len -= 1
                     return
                 curr_item.prev.next = curr_item.next
-                self.len -= 1
+                self.__len -= 1
                 return
 
         def clear(self):
             f""" remove all this {self.__class__.__name__} elements """
-            self.head = None
-            self.tail = None
-            self.len = 0
+            self.__head = None
+            self.__tail = None
+            self.__len = 0
 
         def display(self):
             f""" showing this {self.__class__.__name__} in a nice & readable way """
             if self.isEmpty():
                 return
-            elif self.head.next is None:
-                print(self.head.value)
+            elif self.__head.next is None:
+                print(self.__head.value)
                 return
-            curr_item = self.head
+            curr_item = self.__head
             result = ""
-            while curr_item.next != self.head:
+            while curr_item.next != self.__head:
                 result += str(curr_item.value) + " <--> "
                 curr_item = curr_item.next
             result += str(curr_item.value) + " <--> [first_item]"
