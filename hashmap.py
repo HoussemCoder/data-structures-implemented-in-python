@@ -152,7 +152,7 @@ class Hashmap:
         item = self.__arr[pos]
         if item is None or item[0] == key:
             self.__arr[pos] = (key, value) # set the tuple (key, value) in self.__arr[pos] or update its value
-            self.__addKeyValue(key, value, update=True) if item[0] == key else self.__addKeyValue(key, value)
+            self.__addKeyValue(key, value) if item is None else self.__addKeyValue(key, value, update=True)
             self.__len += 1 if item is None else 0
             return
         elif isinstance(item, tuple) and item[0] != key:
@@ -749,8 +749,8 @@ class Hashmap:
 #         pos = self.__getHash(key) # get position in self.__arr for key using our hash method
 #         item = self.__arr[pos]
 #         if item is None or item == "RIP" or item[0] == key:
-#             self.__arr[pos] = (key, value) # set the tuple (key, value) in self.__arr[pos] or update its value
 #             self.__addKeyValue(key, value, update=True) if isinstance(item, tuple) else self.__addKeyValue(key, value)
+#             self.__arr[pos] = (key, value) # set the tuple (key, value) in self.__arr[pos] or update its value
 #             self.__len += 1 if item is None or item == "RIP" else 0
 #             return
 #         elif item[0] != key:
